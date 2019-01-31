@@ -3,6 +3,9 @@ class Beverage():
         self.name = beverage_name
         self.cost = cost
 
+    def __str__(self): # added for me to see the important details of each beverage!
+        return "This cup of {} costs {} dollars.".format(self.name,self.cost)
+
 
 class Coffee(Beverage):
     def __init__(self, beverage_name, cost, strength):
@@ -15,20 +18,21 @@ class Coffee(Beverage):
         else:
             return False
 
-    def add_milk(self):
-        pass
+    def add_milk(self,added_milk):
+        self.cost+=added_milk.cost
 	  
 arabica = Coffee("arabica", 2.0, 4)
 robusta = Coffee("robusta", 2.5, 5)
 
 #Is arabica coffee stronger than robusta coffee?
 
-print(arabica.stronger_than(robusta)) 
-print(robusta.stronger_than(arabica)) 
+# print(arabica.stronger_than(robusta)) 
+# print(robusta.stronger_than(arabica)) 
 
-# class Milk(Beverage):
-#     def __init__(self):
-#         pass
+class Milk(Beverage):
+    def __init__(self,name,dairy,extra_cost=0):
+        super().__init__(name,extra_cost)
+        self.dairy = dairy
 
 #### HELP! I want milk in my coffee:
 ## 1. Define a subclass Milk of class Beverage. It should inherit all the instance variables, but it 
@@ -39,4 +43,7 @@ print(robusta.stronger_than(arabica))
 #     Milk class and add its cost to the coffee instance's cost. 
 ## 3. Create an instance of almond milk and add that to your cup of arabica! 
 
-
+almond_milk = Milk('almond milk',False,0.75)
+arabica.add_milk(almond_milk)
+print(arabica)
+print(almond_milk)
