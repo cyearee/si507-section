@@ -2,6 +2,7 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session, relationship
 from sqlalchemy import create_engine, Column, ForeignKey, Integer, String
+import sqlalchemy as db
 import json
 
 #### from db.py - basically setting up connection to database and building the base to translate all ORM-speak to SQL commands behind-the-scenes ####
@@ -40,6 +41,16 @@ class Tweeter(Base):
 
 # what about the Tweet class?
 
+class Tweet(Base):
+	__tablename__ = 'tweet'
+	tweet_id = Column(Integer,primary_key=True)
+	tweeter_id = Column(Integer,ForeignKey('tweeter.tweeter_id'))
+	content = Column(String(280))
+	num_replies = Column(Integer)
+	num_likes = Column(Integer)
+	num_retweets = Column(Integer)
+	tweeter = relationship('Tweeter')
+
 #### end entities ####
 
 #### FINALLY let's insert some data by creating instances ####
@@ -54,9 +65,25 @@ unique_tweeters = []
 for d in listodicts:
     if d['tweeter'] not in unique_tweeters:
         unique_tweeters.append(d['tweeter'])
+    #     tweeter_row = Tweeter(tweeter_name=d['tweeter'])
+    #     session.add(tweeter_row)
+    #     tweet_row = Tweet(tweet_id=d['id'],tweeter=tweeter_row,content=d['content'],num_replies=d['replies'],num_likes=d['likes'],num_retweets=d['retweets'])
+    #     session.add(tweet_row)
+    # else:
+    #     tweeter_row = Tweeter(tweeter_name=d['tweeter'])
+    #     tweet_row = Tweet(tweet_id=d['id'],tweeter=tweeter_row,content=d['content'],num_replies=d['replies'],num_likes=d['likes'],num_retweets=d['retweets'])
+    #     session.add(tweet_row)
 
 # create and add instances of tweeters
 for item in unique_tweeters:
     row = Tweeter(tweeter_name=item)
     session.add(row)
     session.commit()
+
+for item in listodicts:
+	# another = Tweeter(tweeter_name=item['tweeter'])
+	# session.add(another)
+	# session.flush()
+	row = Tweet(tweet_id=item['id'],tweeter_id=session.query(Tweeter.tweeter_id).filter(Tweeter.tweeter_name==item['tweeter']),content=item['content'],num_replies=item['replies'],num_likes=item['likes'],num_retweets=item['retweets'])
+	session.add(row)
+session.commit()

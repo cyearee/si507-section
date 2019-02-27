@@ -14,12 +14,19 @@ create_tweeter_query = '''CREATE TABLE tweeter(
   '''
 
 # Now to execute the create_query...
-# c.execute(create_tweeter_query)
+c.execute(create_tweeter_query)
 
 # What about the tweet table?
 
-# create_tweet_query = ''''''
-# c.execute(create_tweet_query)
+create_tweet_query = '''CREATE TABLE tweet(
+	tweet_id INTEGER PRIMARY KEY NOT NULL,
+	tweeter_id INTEGER,
+	content TEXT,
+	num_replies INTEGER,
+	num_likes INTEGER,
+	num_retweets INTEGER,
+	CONSTRAINT fk_tweeter FOREIGN KEY (tweeter_id) REFERENCES tweeter(tweeter_id))'''
+c.execute(create_tweet_query)
 
 # access the data from the json file
 file = open('tweety.json','r')
@@ -38,5 +45,11 @@ for item in unique_tweeters:
 		VALUES (?);
 		''', (item,))
 
-conn.commit()
+for t in listodicts:
+	insertion = (t['id'],t['tweeter'],t['content'],t['replies'],t['likes'],t['retweets'])
+	c.execute('''
+		INSERT INTO tweet 
+		VALUES(?,(SELECT tweeter_id FROM tweeter WHERE tweeter_name=?),?,?,?,?);''',insertion)
+
+conn.commit() # don't forget to commit! otherwise you won't see any changes :p
 conn.close()
